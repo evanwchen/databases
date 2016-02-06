@@ -7,8 +7,9 @@ module.exports = {
   },
 
   users: {
-    // Ditto as above.
+    // 
     get: function () {},
+    // post the new username into the users DB table
     post: function () {}
   }
 };
