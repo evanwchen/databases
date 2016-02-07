@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'addFriend' function just adds the class 'friend'
   //to all messages sent by the user
-  server: 'http://127.0.0.1:3000/classes',
+  server: 'http://127.0.0.1:3000/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -59,11 +59,14 @@ var app = {
       url: app.server,
       type: 'GET',
       contentType: 'application/json',
-      data: { order: '-createdAt'},
+      // data: { order: '-createdAt'},
       success: function(data) {
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
-
+        // if (!data.results || !data.results.length) { return; }
+        if (data[0] === undefined) { 
+          return; 
+        }
+        console.log(data);
         // Get the last message
         var mostRecentMessage = data.results[data.results.length-1];
         var displayedRoom = $('.chat span').first().data('roomname');
@@ -106,8 +109,7 @@ var app = {
       app.$chats.animate({
         scrollTop: scrollTop
       });
-    }
-    else {
+    } else {
       app.$chats.scrollTop(scrollTop);
     }
   },
@@ -142,8 +144,9 @@ var app = {
   },
 
   addMessage: function(data) {
-    if (!data.roomname)
+    if (!data.roomname) {
       data.roomname = 'lobby';
+    }
 
     // Only add messages that are in our current room
     if (data.roomname === app.roomname) {
@@ -156,8 +159,9 @@ var app = {
       $username.text(data.username+': ').attr('data-username', data.username).attr('data-roomname',data.roomname).appendTo($chat);
 
       // Add the friend class
-      if (app.friends[data.username] === true)
+      if (app.friends[data.username] === true) {
         $username.addClass('friend');
+      }
 
       var $message = $('<br><span/>');
       $message.text(data.text).appendTo($chat);
@@ -200,8 +204,7 @@ var app = {
         // Fetch messages again
         app.fetch();
       }
-    }
-    else {
+    } else {
       app.startSpinner();
       // Store as undefined for empty names
       app.roomname = app.$roomSelect.val();

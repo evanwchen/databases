@@ -1,26 +1,30 @@
 var db = require('../db');
 
+// db.connect(function(err){
+//  if (err) console.log('unsuccessful connection');
+//  console.log('successful connection');
+
+// });
+
 module.exports = {
   messages: {
-    get: function (res, req) {
+    get: function (req, res) {
 // a function which produces all the messages
-      db.connect();
+      console.log("hey, i am getting from models");
+      // db.connect();
       db.query('SELECT message, chatroomID, userID FROM messages', function (err, result, fields) {
         if (err) { 
           throw err; 
         } else {
-          for (var i = 0; i < result.length; i++) {
-            //result is an array of objects;
-            var row = result[i];
-            console.log(row.userID + ':' + row.messages);
-          } 
+          console.log("Iam teh result:", result);
+          res.status(201).send(result);
         }
       });
-      db.end();
+      // db.end();
 
     }, 
     // a function which can be used to insert a message into the database
-    post: function (res, req) {
+    post: function (req) {
       db.connect();
       var chatroomID = db.query('SELECT CHATROOMS.ID FROM CHATROOMS, MESSAGES WHERE CHATROOMS.ID=MESSAGES.CHATROOMID AND ' + REQ.BODY.CHATROOM + '= CHATROOMS.ROOMNAME');
       var userID = db.query('SELECT USER.ID FROM USERS, MESSAGES WHERE USERS.ID=MESSAGES.USERID AND ' + REQ.BODY.USERNAME + '= USERS.USERNAME');
@@ -31,7 +35,7 @@ module.exports = {
           if(err) { 
             throw err; 
           } else { 
-            res.send('success'); 
+            res.send(result, 201); 
           }
         });
       db.end();
