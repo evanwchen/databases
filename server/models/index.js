@@ -12,7 +12,7 @@ module.exports = {
 // a function which produces all the messages
       console.log("hey, i am getting from models");
       // db.connect();
-      db.query('SELECT message, chatroomID, userID FROM messages', function (err, result, fields) {
+      db.query('SELECT m.message, c.roomname, u.username FROM messages m, users u, chatrooms c WHERE m.userID=u.id and m.chatroomID=c.id;', function (err, result, fields) {
         if (err) { 
           throw err; 
         } else {

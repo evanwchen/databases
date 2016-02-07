@@ -66,22 +66,27 @@ var app = {
         if (data[0] === undefined) { 
           return; 
         }
-        console.log(data);
         // Get the last message
-        var mostRecentMessage = data.results[data.results.length-1];
-        var displayedRoom = $('.chat span').first().data('roomname');
-        app.stopSpinner();
-        // Only bother updating the DOM if we have a new message
-        if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
-          // Update the UI with the fetched rooms
-          app.populateRooms(data.results);
+        // var mostRecentMessage = data.results[data.results.length-1];
+        // var displayedRoom = $('.chat span').first().data('roomname');
+        // app.stopSpinner();
+        // // Only bother updating the DOM if we have a new message
+        // if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
+        //   // Update the UI with the fetched rooms
+        //   app.populateRooms(data.results);
 
-          // Update the UI with the fetched messages
-          app.populateMessages(data.results, animate);
+        //   // Update the UI with the fetched messages
+        //   app.populateMessages(data.results, animate);
 
-          // Store the ID of the most recent message
-          app.lastMessageId = mostRecentMessage.objectId;
+        //   // Store the ID of the most recent message
+        //   app.lastMessageId = mostRecentMessage.objectId;
+        // }
+        var messages = [];
+        for (var prop in data) {
+          messages.push(data[prop]);
         }
+        app.populateRooms(messages);
+        app.populateMessages(messages, animate);
       },
       error: function(data) {
         console.error('chatterbox: Failed to fetch messages');
@@ -117,11 +122,25 @@ var app = {
   populateRooms: function(results) {
     app.$roomSelect.html('<option value="__newRoom">New room...</option><option value="" selected>Lobby</option></select>');
 
+    // if (results) {
+    //   var rooms = {};
+    //   results.forEach(function(data) {
+    //     var roomname = data.roomname;
+    //     if (roomname && !rooms[roomname]) {
+    //       // Add the room to the select menu
+    //       app.addRoom(roomname);
+
+    //       // Store that we've added this room already
+    //       rooms[roomname] = true;
+    //     }
+    //   });
+    // }
+
     if (results) {
       var rooms = {};
       results.forEach(function(data) {
         var roomname = data.roomname;
-        if (roomname && !rooms[roomname]) {
+        if (roomname && !rooms[data.roomname]) {
           // Add the room to the select menu
           app.addRoom(roomname);
 
@@ -144,11 +163,12 @@ var app = {
   },
 
   addMessage: function(data) {
-    if (!data.roomname) {
-      data.roomname = 'lobby';
-    }
+    // if (!data.roomname) {
+    //   data.roomname = 'lobby';
+    // }
 
     // Only add messages that are in our current room
+    // if (data.roomname === app.roomname) {
     if (data.roomname === app.roomname) {
       // Create a div to hold the chats
       var $chat = $('<div class="chat"/>');
@@ -164,7 +184,7 @@ var app = {
       }
 
       var $message = $('<br><span/>');
-      $message.text(data.text).appendTo($chat);
+      $message.text(data.message).appendTo($chat);
 
       // Add the message to the UI
       app.$chats.append($chat);
